@@ -1,7 +1,7 @@
 
 
 
-    ``` c
+    ``` c++
 /* USER CODE BEGIN 2 */
   SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
   /* USER CODE END 2 */ 
