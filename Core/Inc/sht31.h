@@ -1,6 +1,7 @@
 #ifndef INC_SHT31_H_
 #define INC_SHT31_H_
 
+
 #include <stdint.h>
 #include <stdbool.h> // Include for bool type
 #include "stm32l4xx_hal.h"
@@ -34,6 +35,6 @@ SHT31_Status SHT31_GetID(uint8_t* sensor_id);
 SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint8_t expected_id, uint16_t command, UART_HandleTypeDef* huart);
 float SHT31_GetTemperature(void);
 float SHT31_GetHumidity(void);
-bool SHT31_ReadTempHum(float *temperature_out, float *humidity_out);
+SHT31_Status SHT31_ReadTempHum(float *temperature_out, float *humidity_out);
 
 #endif /* INC_SHT31_H_ */

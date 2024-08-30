@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
-//#include "sht31.h"
+#include "sht31.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,18 +77,10 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	uint8_t sensor_address = SHT31_ADDRESS_A;
+
 	//uint8_t Test[12];
-	uint16_t command_Sht31	= 0X240B;
-	uint8_t buffer_SHT31_I2C_OUT[2] = {command_Sht31 >> 8,(command_Sht31 & 0xFF)};
-	uint8_t buffer_SHT31_I2C_IN[6];			         //0x2721 -- 0x240B;	// SINGE SHOT // NON STRETCH // MEDIUM REPEABILITY												//0x2721    // PERIODIC MEASUREMENT 10mps MEDIUM
-    uint8_t addressSht31	= 0x44;					// Address de I2C
-	uint16_t temperature_raw;
-	uint16_t humidity_raw;
-	float temperature;
-	float humidity;
-
     //uint8_t buffer_SHT31_I2C_OUT[2]	= {0x24, 0x0B};	// BUFFER QUE ENVIA COMANDO (Repeatability Medium, Clock Stretching disabled)
-
 	//int count = 0;
 
   /* USER CODE END 1 */
@@ -116,11 +108,24 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t sensor_id;
+  SHT31_Status status = SHT31_GetID(&sensor_id);
+  if (status == SHT31_OK) {
+      char id_msg[50];
+      sprintf(id_msg, "Sensor ID: 0x%02X\n", sensor_id);
+      HAL_UART_Transmit(&huart3, (uint8_t*)id_msg, strlen(id_msg), HAL_MAX_DELAY);
+  } else {
+      char id_fail_msg[] = "Failed to read Sensor ID!\n";
+      HAL_UART_Transmit(&huart3, (uint8_t*)id_fail_msg, strlen(id_fail_msg), HAL_MAX_DELAY);
+      while (1); // Stay here in case of failure
+  }
+
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -148,7 +153,7 @@ int main(void)
 	          temp_int / 100, temp_int % 100,
 	          hum_int / 100, hum_int % 100);
 	  HAL_UART_Transmit(&huart3, buf, strlen((char*)buf), HAL_MAX_DELAY);
-	  HAL_Delay(1000); /*
+	  HAL_Delay(1000); */
   }
   /* USER CODE END 3 */
 }
