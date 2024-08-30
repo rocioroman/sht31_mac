@@ -1,9 +1,10 @@
-#include "SHT31.h"
+#include "sht31.h"
 #include <stdio.h>
+#include <string.h>
 #include <math.h> // For NAN
 
 // Internal SHT31_INFO structure to hold sensor state
- struct {
+ typedef struct {
     uint8_t address;
     I2C_HandleTypeDef* hi2c;
     uint16_t command;
@@ -77,13 +78,13 @@ SHT31_Status SHT31_GetID(uint8_t* sensor_id) {
     uint8_t serial_number[6];
 
     if (SHT31_SendCommand(SHT31_READ_SERIAL_NUMBER) != SHT31_OK) {
-        return SHT31_Error;
+        return SHT31_ERROR;
     }
 
     HAL_Delay(10);
 
     if (HAL_I2C_Master_Receive(sht31_sensor.hi2c, (sht31_sensor.address << 1), serial_number, 6, HAL_MAX_DELAY) != HAL_OK) {
-        return SHT31_Error;
+        return SHT31_ERROR;
     }
 
     *sensor_id = serial_number[0];  // Assuming the ID is stored in the first byte of the serial number
@@ -106,7 +107,7 @@ SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint8_t expect
     if (sensor_id != expected_id) {
         char error_msg[] = "Sensor ID mismatch!\n";
         HAL_UART_Transmit(huart, (uint8_t*)error_msg, strlen(error_msg), HAL_MAX_DELAY);
-        return SHT31_ID_Mismatch;
+        return SHT31_ID_MISMATCH;
     }
 
     char success_msg[] = "Sensor initialized successfully!\n";

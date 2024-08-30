@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
-//#include "sht31.h"
+#include "sht31.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,18 +77,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
 	//uint8_t Test[12];
-	uint16_t command_Sht31	= 0X240B;
-	uint8_t buffer_SHT31_I2C_OUT[2] = {command_Sht31 >> 8,(command_Sht31 & 0xFF)};
-	uint8_t buffer_SHT31_I2C_IN[6];			         //0x2721 -- 0x240B;	// SINGE SHOT // NON STRETCH // MEDIUM REPEABILITY												//0x2721    // PERIODIC MEASUREMENT 10mps MEDIUM
-    uint8_t addressSht31	= 0x44;					// Address de I2C
-	uint16_t temperature_raw;
-	uint16_t humidity_raw;
-	float temperature;
-	float humidity;
-
     //uint8_t buffer_SHT31_I2C_OUT[2]	= {0x24, 0x0B};	// BUFFER QUE ENVIA COMANDO (Repeatability Medium, Clock Stretching disabled)
-
 	//int count = 0;
 
   /* USER CODE END 1 */
@@ -116,17 +107,46 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  SHT31_Status status =   SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
+  if (status != SHT31_OK) {
+      char fail_msg[] = "Error inicializacion lector!\n";
+      HAL_UART_Transmit(&huart3, (uint8_t*)fail_msg, strlen(fail_msg), HAL_MAX_DELAY);
+      while (1); // Stay here in case of failure
+  }
+
+
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
+      float temperature, humidity;
+
+      // Read temperature and humidity
+      if (SHT31_ReadTempHum(&temperature, &humidity) == SHT31_OK) {
+          char temp_msg[50];
+          sprintf(temp_msg, "Temperature: %.2f C\n", temperature);
+          HAL_UART_Transmit(&huart3, (uint8_t*)temp_msg, strlen(temp_msg), HAL_MAX_DELAY);
+
+          char hum_msg[50];
+          sprintf(hum_msg, "Humidity: %.2f %%\n", humidity);
+          HAL_UART_Transmit(&huart3, (uint8_t*)hum_msg, strlen(hum_msg), HAL_MAX_DELAY);
+      } else {
+          char error_msg[] = "Failed to read temperature and humidity!\n";
+          HAL_UART_Transmit(&huart3, (uint8_t*)error_msg, strlen(error_msg), HAL_MAX_DELAY);
+      }
+
+      // Delay between readings (e.g., 2 seconds)
+      HAL_Delay(2000);
+
+
+	  /*HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
 	  HAL_Delay(6);
 	  HAL_I2C_Master_Receive(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_IN, 6, HAL_MAX_DELAY);
 
@@ -136,6 +156,8 @@ int main(void)
 	  humidity	= 100.0*humidity_raw/65535;
 
 	  uint8_t buf[32];
+
+
 	  unsigned int temp_int = (unsigned int)(temperature * 100);
 	  unsigned int hum_int = (unsigned int)(humidity * 100);
 
@@ -143,7 +165,7 @@ int main(void)
 	          temp_int / 100, temp_int % 100,
 	          hum_int / 100, hum_int % 100);
 	  HAL_UART_Transmit(&huart3, buf, strlen((char*)buf), HAL_MAX_DELAY);
-	  HAL_Delay(1000);
+	  HAL_Delay(1000); */
   }
   /* USER CODE END 3 */
 }

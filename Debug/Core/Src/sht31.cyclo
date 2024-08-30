@@ -1,0 +1,8 @@
+../Core/Src/sht31.c:18:21:SHT31_SendCommand	2
+../Core/Src/sht31.c:31:16:SHT31_CRC8	4
+../Core/Src/sht31.c:45:21:SHT31_ReadData	5
+../Core/Src/sht31.c:77:14:SHT31_GetID	3
+../Core/Src/sht31.c:96:14:SHT31_Init	3
+../Core/Src/sht31.c:120:7:SHT31_GetTemperature	2
+../Core/Src/sht31.c:129:7:SHT31_GetHumidity	2
+../Core/Src/sht31.c:138:14:SHT31_ReadTempHum	2
