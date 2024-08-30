@@ -126,18 +126,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	   //Data to send
-	  //SHT31_TransmitI2C();
-
-	  	// Copia segundo byte del comando
-	  	//HAL_StatusTypeDef ret = HAL_I2C_Master_Transmit(sht31.hi2c, sht31.address<<1, buffer, 2, HAL_MAX_DELAY);
-	  //HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2);
 	  HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
 	  HAL_Delay(6);
 	  HAL_I2C_Master_Receive(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_IN, 6, HAL_MAX_DELAY);
 
 	  temperature_raw=(buffer_SHT31_I2C_IN[0] << 8) + buffer_SHT31_I2C_IN[1];	// Une valores del bus para temperatura
-	  temperature= 175.0*temperature_raw/65535 - 45;								// Escala sugerida
+	  temperature= 175.0*temperature_raw/65535 - 45;
 	  humidity_raw= (buffer_SHT31_I2C_IN[3] << 8) + buffer_SHT31_I2C_IN[4];	// Une los valores del bus para humedad
 	  humidity	= 100.0*humidity_raw/65535;
 

@@ -1,32 +1,39 @@
-/*
- * sht31.h
- *
- *  Created on: Aug 28, 2024
- *      Author: krea
- */
-
 #ifndef INC_SHT31_H_
 #define INC_SHT31_H_
 
 #include <stdint.h>
+#include <stdbool.h> // Include for bool type
+#include "stm32l4xx_hal.h"
 
-#define SHT31_ADDRESS_A 0x44;
+// I2C Addresses
+#define SHT31_ADDRESS_A 0x44 // Table 7 page 9 of the datasheet
+#define SHT31_ADDRESS_B 0x45
 
-uint16_t command_Sht31	= 0X240B;				//0x2721 -- 0x240B;	// SINGE SHOT // NON STRETCH // MEDIUM REPEABILITY												//0x2721    // PERIODIC MEASUREMENT 10mps MEDIUM
-uint8_t addressSht31	= 0x44;					// Address de I2C
+// Commands
+#define SHT31_READ_SERIAL_NUMBER 0x3780
+// MEASUREMENT Single shot
+#define SHT31_MEASUREMENT_STRETCH_HIGH 0x2C06
+#define SHT31_MEASUREMENT_STRETCH_MEDIUM 0x2C0D
+#define SHT31_MEASUREMENT_STRETCH_LOW 0x2C10
 
-//uint8_t buffer_SHT31_I2C_OUT[2]	= {0x24, 0x0B};	// BUFFER QUE ENVIA COMANDO (Repeatability Medium, Clock Stretching disabled)
-uint8_t buffer_SHT31_I2C_OUT[2];
-uint8_t buffer_SHT31_I2C_IN[6];					// Buffer que recibe respuesta
+#define SHT31_MEASUREMENT_NOSTRETCH_HIGH 0x2400
+#define SHT31_MEASUREMENT_NOSTRETCH_MEDIUM 0x240B
+#define SHT31_MEASUREMENT_NOSTRETCH_LOW 0x2416
 
-typedef struct SHT31_INFO{
-	long long lastMeasureTime;
-	uint16_t temperature_raw;
-	uint16_t humidity_raw;
-	float temperature;
-	float humidity;
-}sht31;
+typedef enum {
+    SHT31_OK,
+    SHT31_ERROR,
+	SHT31_TRANSMIT_ERROR,
+	SHT31_RECEIVE_ERROR,
+    SHT31_CRC_ERROR,
+    SHT31_ID_MISMATCH,
+} SHT31_Status;
 
-
+// Function Prototypes
+SHT31_Status SHT31_GetID(uint8_t* sensor_id);
+SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint8_t expected_id, uint16_t command, UART_HandleTypeDef* huart);
+float SHT31_GetTemperature(void);
+float SHT31_GetHumidity(void);
+bool SHT31_ReadTempHum(float *temperature_out, float *humidity_out);
 
 #endif /* INC_SHT31_H_ */
