@@ -131,14 +131,14 @@ int main(void)
       // Read temperature and humidity
       if (SHT31_ReadTempHum(&temperature, &humidity) == SHT31_OK) {
           char temp_msg[50];
-          sprintf(temp_msg, "Temperature: %.2f C\n", temperature);
+          sprintf(temp_msg, "Temp: %.2f C\n", temperature);
           HAL_UART_Transmit(&huart3, (uint8_t*)temp_msg, strlen(temp_msg), HAL_MAX_DELAY);
 
           char hum_msg[50];
-          sprintf(hum_msg, "Humidity: %.2f %%\n", humidity);
+          sprintf(hum_msg, "Hum: %.2f %%\n", humidity);
           HAL_UART_Transmit(&huart3, (uint8_t*)hum_msg, strlen(hum_msg), HAL_MAX_DELAY);
       } else {
-          char error_msg[] = "Failed to read temperature and humidity!\n";
+          char error_msg[] = "Error en la lectura\n";
           HAL_UART_Transmit(&huart3, (uint8_t*)error_msg, strlen(error_msg), HAL_MAX_DELAY);
       }
 
