@@ -1,4 +1,4 @@
-#include "SHT31.h"
+#include "sht31.h"
 #include <stdio.h>
 #include <math.h> // For NAN
 

@@ -126,7 +126,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
+
+
+
+	  /*HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
 	  HAL_Delay(6);
 	  HAL_I2C_Master_Receive(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_IN, 6, HAL_MAX_DELAY);
 
@@ -136,6 +139,8 @@ int main(void)
 	  humidity	= 100.0*humidity_raw/65535;
 
 	  uint8_t buf[32];
+
+
 	  unsigned int temp_int = (unsigned int)(temperature * 100);
 	  unsigned int hum_int = (unsigned int)(humidity * 100);
 
@@ -143,7 +148,7 @@ int main(void)
 	          temp_int / 100, temp_int % 100,
 	          hum_int / 100, hum_int % 100);
 	  HAL_UART_Transmit(&huart3, buf, strlen((char*)buf), HAL_MAX_DELAY);
-	  HAL_Delay(1000);
+	  HAL_Delay(1000); /*
   }
   /* USER CODE END 3 */
 }
