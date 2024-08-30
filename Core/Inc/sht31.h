@@ -34,11 +34,12 @@ typedef enum {
     SHT31_ID_MISMATCH,
 } SHT31_Status;
 
-// Function Prototypes
+//
 SHT31_Status SHT31_GetID(uint8_t* serial_id, UART_HandleTypeDef* huart);
+
 SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint16_t command);
-float SHT31_GetTemperature(void);
-float SHT31_GetHumidity(void);
+float SHT31_GetTemperature();
+float SHT31_GetHumidity();
 SHT31_Status SHT31_ReadTempHum(float *temperature_out, float *humidity_out);
 
 #endif /* INC_SHT31_H_ */

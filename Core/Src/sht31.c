@@ -98,7 +98,6 @@ SHT31_Status SHT31_GetID(uint8_t* serial_id, UART_HandleTypeDef* huart) {
         return SHT31_ID_MISMATCH;  // Return error if they don't match
     }
      return SHT31_OK;
-
 }
 
 // Function to initialize the sensor

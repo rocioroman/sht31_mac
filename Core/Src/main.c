@@ -123,9 +123,6 @@ int main(void)
   SHT31_Init(&hi2c1, SHT31_ADDRESS_A, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM);
 
 
-
-
-
   while (1)
   {
     /* USER CODE END WHILE */
