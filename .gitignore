@@ -1,0 +1,29 @@
+# Ignorar carpetas de compilación y objetos intermedios
+/Debug/
+/Release/
+
+# Ignorar archivos de configuración específicos de la IDE
+*.launch
+*.ide.log
+*.cproject
+*.project
+*.mxproject
+*.settings/
+
+# Ignorar archivos generados automáticamente por STM32CubeMX
+*.ioc
+/STM32CubeMX
+
+# Ignorar archivos binarios y de salida
+*.bin
+*.hex
+*.elf
+*.map
+
+# Ignorar archivos de depuración
+*.dep
+*.d
+*.o
+
+# Ignorar carpetas de build creadas por otras herramientas
+/Target/
