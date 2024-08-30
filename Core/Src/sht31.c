@@ -1,10 +1,10 @@
 #include "sht31.h"
 #include <stdio.h>
 #include <string.h>
-#include <math.h> // For NAN
+#include <math.h>
 
-// Internal SHT31_INFO structure to hold sensor state
- typedef struct {
+// Estrucutra para guardar información del sensor
+typedef struct {
     uint8_t address;
     I2C_HandleTypeDef* hi2c;
     uint16_t command;
@@ -12,7 +12,7 @@
     float humidity;
 } SHT31_INFO;
 
-static SHT31_INFO sht31_sensor; // Static instance of the sensor structure
+static SHT31_INFO sht31_sensor;
 
 //Envía comando al sensor
 static SHT31_Status SHT31_SendCommand(uint16_t command) {
@@ -26,7 +26,7 @@ static SHT31_Status SHT31_SendCommand(uint16_t command) {
     return SHT31_OK;
 }
 
-// CRC-8 calculation function
+
 // CRC-8 calculation polynomial: x^8 + x^5 + x^4 + 1
 static uint8_t SHT31_CRC8(uint8_t *data, int len) {
 	uint8_t crc = 0xFF;
