@@ -74,74 +74,73 @@ static SHT31_Status SHT31_ReadData(void) {
 }
 
 // Function to get the sensor ID
-SHT31_Status SHT31_GetID(uint8_t* sensor_id) {
+SHT31_Status SHT31_GetID(uint8_t* serial_id, UART_HandleTypeDef* huart) {
     uint8_t serial_number[6];
-
+    const uint8_t expected_serial[] = SHT31_SERIAL_NUMBER;
     if (SHT31_SendCommand(SHT31_READ_SERIAL_NUMBER) != SHT31_OK) {
         return SHT31_ERROR;
     }
-
     HAL_Delay(10);
 
     if (HAL_I2C_Master_Receive(sht31_sensor.hi2c, (sht31_sensor.address << 1), serial_number, 6, HAL_MAX_DELAY) != HAL_OK) {
-        return SHT31_ERROR;
+        return SHT31_RECEIVE_ERROR;
     }
+    memcpy(serial_id, serial_number, 6);
+    char id_msg[100];
+    sprintf(id_msg, "Retrieved Sensor ID: 0x%02X%02X%02X%02X%02X%02X\n",
+               serial_id[0], serial_id[1], serial_id[2],
+               serial_id[3], serial_id[4], serial_id[5]);
 
-    *sensor_id = serial_number[0];  // Assuming the ID is stored in the first byte of the serial number
+       // Send the ID over UART
+    HAL_UART_Transmit(huart, (uint8_t*)id_msg, strlen(id_msg), HAL_MAX_DELAY);
+    // Compare the retrieved serial number with the expected one
+    if (memcmp(serial_id, expected_serial, 6) != 0) {
+        return SHT31_ID_MISMATCH;  // Return error if they don't match
+    }
+     return SHT31_OK;
 
-    return SHT31_OK;
 }
 
 // Function to initialize the sensor
-SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint8_t expected_id, uint16_t command, UART_HandleTypeDef* huart) {
+SHT31_Status SHT31_Init(I2C_HandleTypeDef* hi2c, uint8_t address, uint16_t command) {
     sht31_sensor.hi2c = hi2c;
     sht31_sensor.address = address;
     sht31_sensor.command = command;
 
-    uint8_t sensor_id;
-    SHT31_Status status = SHT31_GetID(&sensor_id);
+    /*uint8_t serial_id[6]; //id obtenido por comando
+    SHT31_Status status = SHT31_GetID(serial_id);
     if (status != SHT31_OK) {
         return status;
-    }
-
-    if (sensor_id != expected_id) {
-        char error_msg[] = "Sensor ID mismatch!\n";
-        HAL_UART_Transmit(huart, (uint8_t*)error_msg, strlen(error_msg), HAL_MAX_DELAY);
-        return SHT31_ID_MISMATCH;
-    }
-
-    char success_msg[] = "Sensor initialized successfully!\n";
-    HAL_UART_Transmit(huart, (uint8_t*)success_msg, strlen(success_msg), HAL_MAX_DELAY);
+    }*/
 
     return SHT31_OK;
 }
 
-// Function to get the temperature value
+
 float SHT31_GetTemperature(void) {
     if (SHT31_ReadData() == SHT31_OK) {
         return sht31_sensor.temperature;
     } else {
-        return -1.0f;  // Return an invalid temperature on error
+        return -1.0f;  // Cuando hay error retorna una lectura invalida
     }
 }
 
-// Function to get the humidity value
 float SHT31_GetHumidity(void) {
     if (SHT31_ReadData() == SHT31_OK) {
         return sht31_sensor.humidity;
     } else {
-        return -1.0f;  // Return an invalid humidity on error
+        return -1.0f;  // Cuando hay error retorna una lectura invalida
     }
 }
 
-// Function to get both temperature and humidity in a single operation
+// Se obtiene temperatura y humedad de una lectura
 SHT31_Status SHT31_ReadTempHum(float *temperature_out, float *humidity_out) {
     if (SHT31_ReadData() == SHT31_OK) {
         *temperature_out = sht31_sensor.temperature;
         *humidity_out = sht31_sensor.humidity;
         return SHT31_OK;
     } else {
-        *temperature_out = *humidity_out = NAN;  // Return NAN if the operation fails
+        *temperature_out = *humidity_out = NAN;  // Si falla la operación
         return SHT31_ERROR;
     }
 }

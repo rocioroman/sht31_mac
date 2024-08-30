@@ -1,8 +1,8 @@
 ../Core/Src/sht31.c:18:21:SHT31_SendCommand	32	static
 ../Core/Src/sht31.c:31:16:SHT31_CRC8	24	static
 ../Core/Src/sht31.c:45:21:SHT31_ReadData	32	static
-../Core/Src/sht31.c:77:14:SHT31_GetID	32	static
-../Core/Src/sht31.c:96:14:SHT31_Init	88	static
+../Core/Src/sht31.c:77:14:SHT31_GetID	168	static
+../Core/Src/sht31.c:105:14:SHT31_Init	16	static
 ../Core/Src/sht31.c:120:7:SHT31_GetTemperature	8	static
-../Core/Src/sht31.c:129:7:SHT31_GetHumidity	8	static
-../Core/Src/sht31.c:138:14:SHT31_ReadTempHum	16	static
+../Core/Src/sht31.c:128:7:SHT31_GetHumidity	8	static
+../Core/Src/sht31.c:137:14:SHT31_ReadTempHum	16	static

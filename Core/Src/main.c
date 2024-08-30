@@ -78,10 +78,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
-	//uint8_t Test[12];
-    //uint8_t buffer_SHT31_I2C_OUT[2]	= {0x24, 0x0B};	// BUFFER QUE ENVIA COMANDO (Repeatability Medium, Clock Stretching disabled)
-	//int count = 0;
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -107,17 +103,26 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  SHT31_Status status =   SHT31_Init(&hi2c1, SHT31_ADDRESS_A, 0x0C, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM, &huart3);
-  if (status != SHT31_OK) {
-      char fail_msg[] = "Error inicializacion lector!\n";
+
+  SHT31_Status status_init = SHT31_Init(&hi2c1, SHT31_ADDRESS_A, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM);
+  if (status_init != SHT31_OK) {
+      char fail_msg[] = "Error inicializacion lector\n";
       HAL_UART_Transmit(&huart3, (uint8_t*)fail_msg, strlen(fail_msg), HAL_MAX_DELAY);
-      while (1); // Stay here in case of failure
+      while (1);
+  }else{
+      char fail_msg[] = "Correcta inicialización\n";
+      HAL_UART_Transmit(&huart3, (uint8_t*)fail_msg, strlen(fail_msg), HAL_MAX_DELAY);
+      while (1);
+
   }
+
+  SHT31_Init(&hi2c1, SHT31_ADDRESS_A, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM);
+
+
 
 
 
@@ -144,28 +149,6 @@ int main(void)
 
       // Delay between readings (e.g., 2 seconds)
       HAL_Delay(2000);
-
-
-	  /*HAL_I2C_Master_Transmit(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_OUT, 2, HAL_MAX_DELAY);
-	  HAL_Delay(6);
-	  HAL_I2C_Master_Receive(&hi2c1, addressSht31<<1, buffer_SHT31_I2C_IN, 6, HAL_MAX_DELAY);
-
-	  temperature_raw=(buffer_SHT31_I2C_IN[0] << 8) + buffer_SHT31_I2C_IN[1];	// Une valores del bus para temperatura
-	  temperature= 175.0*temperature_raw/65535 - 45;
-	  humidity_raw= (buffer_SHT31_I2C_IN[3] << 8) + buffer_SHT31_I2C_IN[4];	// Une los valores del bus para humedad
-	  humidity	= 100.0*humidity_raw/65535;
-
-	  uint8_t buf[32];
-
-
-	  unsigned int temp_int = (unsigned int)(temperature * 100);
-	  unsigned int hum_int = (unsigned int)(humidity * 100);
-
-	  sprintf((char*)buf, "t=%u.%02u, h=%u.%02u\r\n",
-	          temp_int / 100, temp_int % 100,
-	          hum_int / 100, hum_int % 100);
-	  HAL_UART_Transmit(&huart3, buf, strlen((char*)buf), HAL_MAX_DELAY);
-	  HAL_Delay(1000); */
   }
   /* USER CODE END 3 */
 }
