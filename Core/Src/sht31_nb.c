@@ -3,7 +3,6 @@
 #include <string.h>
 #include <math.h>
 
-// Sends a command to the sensor
 static SHT31_Status SHT31_SendCommand(sht31* sensor, uint16_t command) {
     uint8_t cmd[2];
     cmd[0] = (command >> 8) & 0xFF;
@@ -15,7 +14,6 @@ static SHT31_Status SHT31_SendCommand(sht31* sensor, uint16_t command) {
     return SHT31_OK;
 }
 
-// CRC-8 calculation polynomial: x^8 + x^5 + x^4 + 1
 static uint8_t SHT31_CRC8(uint8_t *data, int len) {
     uint8_t crc = 0xFF;
     const uint8_t poly = 0x31;
@@ -29,12 +27,12 @@ static uint8_t SHT31_CRC8(uint8_t *data, int len) {
     return crc;
 }
 
-// Start reading (Step 1)
+// Comienza lectura paso 1
 SHT31_Status SHT31_StartRead(sht31* sensor) {
     return SHT31_SendCommand(sensor, sensor->command);
 }
 
-// Check if data is ready and retrieve (Step 2)
+// Revisa que la lectura este lista y obtiene los datos
 SHT31_Status SHT31_ReadTempHum_NonBlocking(sht31* sensor, float* temperature_out, float* humidity_out) {
     uint8_t data[6];
 

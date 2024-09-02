@@ -26,7 +26,6 @@ static uint8_t SHT31_CRC8(uint8_t *data, int len) {
     return crc;
 }
 
-// Function to get both temperature and humidity 
 static SHT31_Status SHT31_ReadData(sht31* sensor) {
     uint8_t data[6];
     SHT31_Status status = SHT31_SendCommand(sensor, sensor->command);
@@ -34,16 +33,16 @@ static SHT31_Status SHT31_ReadData(sht31* sensor) {
         return status;
     }
 
-    HAL_Delay(15);  // Wait for measurement to complete
+    HAL_Delay(15);  // Espera a que se complete la medicion
 
     if (HAL_I2C_Master_Receive(sensor->hi2c, (sensor->address << 1), data, 6, HAL_MAX_DELAY) != HAL_OK) {
         return SHT31_RECEIVE_ERROR;
     }
-    // Verify CRC for temperature
+    // CRC temperatura
     if (SHT31_CRC8(data, 2) != data[2]) {
         return SHT31_CRC_ERROR;
     }
-    // Verify CRC for humidity 
+    // CRC humedad
     if (SHT31_CRC8(data + 3, 2) != data[5]) {
         return SHT31_CRC_ERROR;
     }
