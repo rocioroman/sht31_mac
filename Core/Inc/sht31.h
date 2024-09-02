@@ -1,7 +1,6 @@
 #ifndef INC_SHT31_H_
 #define INC_SHT31_H_
 
-
 #include <stdint.h>
 #include <stdbool.h> // Include for bool type
 #include "stm32l4xx_hal.h"
