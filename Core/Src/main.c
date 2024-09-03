@@ -119,10 +119,11 @@ int main(void)
   // Inicializar sensor con address SHT31_ADDRESS_A, una medicion nostretch_medium
   SHT31_Status status_init = SHT31_Init(&sensor, &hi2c1, SHT31_ADDRESS_A, SHT31_MEASUREMENT_NOSTRETCH_MEDIUM);
   if (status_init != SHT31_OK) {
-      char fail_msg[] = "Error inicializando sensor\n";
+      char fail_msg[] = "Error inicializando sensor!\n";
       HAL_UART_Transmit(&huart3, (uint8_t*)fail_msg, strlen(fail_msg), HAL_MAX_DELAY);
+
   }else{
-      char fail_msg[] = "Inicio correcto\n";
+      char fail_msg[] = "Inicialización correcta!\n";
       HAL_UART_Transmit(&huart3, (uint8_t*)fail_msg, strlen(fail_msg), HAL_MAX_DELAY);
   }
 
@@ -137,26 +138,26 @@ int main(void)
   } else {
 	  char id_fail_msg[] = "Falla en lectura del ID sensor\n";
 	  HAL_UART_Transmit(&huart3, (uint8_t*)id_fail_msg, strlen(id_fail_msg), HAL_MAX_DELAY);
+	  while (1);
   }
 
-  SHT31_Status status_start = SHT31_StartRead(&sensor);
-  if (status_start != SHT31_OK) {
-      char start_fail_msg[] = "Error iniciando lectura!\n";
-      HAL_UART_Transmit(&huart3, (uint8_t*)start_fail_msg, strlen(start_fail_msg), HAL_MAX_DELAY);
-  }
   while (1){
-      float temperature, humidity;
+	  float temperature, humidity;
 
-      SHT31_Status status_read = SHT31_ReadTempHum_NonBlocking(&sensor, &temperature, &humidity);
-      if (status_read == SHT31_OK) {
-          char data_msg[50];
-          sprintf(data_msg, "Temp: %.2f C, Hum: %.2f %%\n", temperature, humidity);
-          HAL_UART_Transmit(&huart3, (uint8_t*)data_msg, strlen(data_msg), HAL_MAX_DELAY);
+	  // Leer temperatura y humedad
+	  SHT31_Status status_read = SHT31_ReadTempHum(&sensor, &temperature, &humidity);
+	  if (status_read == SHT31_OK) {
+		  char data_msg[50];
+		  sprintf(data_msg, "Temp: %.2f C, Hum: %.2f %%\n", temperature, humidity);
+		  HAL_UART_Transmit(&huart3, (uint8_t*)data_msg, strlen(data_msg), HAL_MAX_DELAY);
+	  } else {
+		  char error_msg[] = "Error en lectura del sensor\n";
+		  HAL_UART_Transmit(&huart3, (uint8_t*)error_msg, strlen(error_msg), HAL_MAX_DELAY);
+	  }
 
-          SHT31_StartRead(&sensor); //se comienza hace otra lectura si esta listo
-
-      }
+	  HAL_Delay(2000);
   }
+
   /* USER CODE END 3 */
 }
 
