@@ -56,23 +56,17 @@ static SHT31_Status SHT31_ReadData(sht31* sensor) {
     return SHT31_OK;
 }
 
-SHT31_Status SHT31_GetID(sht31* sensor, uint8_t* serial_id) {
+SHT31_Status SHT31_GetID(sht31* sensor) {
     uint8_t serial_number[6];
-    const uint8_t expected_serial[] = SHT31_SERIAL_NUMBER;
     if (SHT31_SendCommand(sensor, SHT31_READ_SERIAL_NUMBER) != SHT31_OK) {
-        return SHT31_ERROR;
+        return SHT31_SEND_COMMAND_ID_ERROR;
     }
-    HAL_Delay(10);
+    HAL_Delay(15);
 
     if (HAL_I2C_Master_Receive(sensor->hi2c, (sensor->address << 1), serial_number, 6, HAL_MAX_DELAY) != HAL_OK) {
-        return SHT31_RECEIVE_ERROR;
+        return SHT31_RECEIVE_ID_ERROR;
     }
-    memcpy(serial_id, serial_number, 6);
-    // Compare the retrieved serial number with the expected one 
-    //if (compare==1 & memcmp(serial_id, expected_serial, 6) != 0) {
-    if (memcmp(serial_id, expected_serial, 6) != 0) {
-        return SHT31_ID_MISMATCH;
-    }
+    memcpy(sensor->id, serial_number, 6);
     return SHT31_OK;
 }
 
@@ -102,10 +96,54 @@ float SHT31_GetTemperature(sht31* sensor) {
 }
 
 float SHT31_GetHumidity(sht31* sensor) {
-    if (SHT31_ReadData() == SHT31_OK) {
+	SHT31_Status status = SHT31_ReadData(sensor);
+    if (status == SHT31_OK) {
         return sensor->humidity;
     } else {
         return -1.0f;  // Cuando hay error retorna una lectura invalida
     }
+}
+
+////NON BLOCKING/////////
+SHT31_Status SHT31_StartRead(sht31* sensor) {
+    return SHT31_SendCommand(sensor, sensor->command);
+}
+// Revisa que la lectura este lista y obtiene los datos
+SHT31_Status SHT31_ReadTempHum_NonBlocking(sht31* sensor, float* temperature_out, float* humidity_out) {
+    uint8_t data[6];
+
+    HAL_StatusTypeDef HAL_status= HAL_I2C_Master_Receive(sensor->hi2c, (sensor->address << 1), data, 6, 0);
+
+    switch(HAL_status){
+    	case HAL_OK:
+    		break;
+		case HAL_BUSY:
+			return SHT31_RECEIVE_BUSY_ERROR;
+		case HAL_TIMEOUT:
+			return SHT31_RECEIVE_TIMEOUT_ERROR;
+		case HAL_ERROR:
+			return SHT31_RECEIVE_ERROR;
+		default:
+		     return SHT31_RECEIVE_UNKNOWN_ERROR;
+    }
+
+    if (SHT31_CRC8(data, 2) != data[2]) {
+        return SHT31_CRC_ERROR;
+    }
+
+    if (SHT31_CRC8(data + 3, 2) != data[5]) {
+        return SHT31_CRC_ERROR;
+    }
+
+    uint16_t temperature_raw = (data[0] << 8) | data[1];
+    uint16_t humidity_raw = (data[3] << 8) | data[4];
+
+    sensor->temperature = -45 + 175 * (temperature_raw / 65535.0);
+    sensor->humidity = 100 * (humidity_raw / 65535.0);
+
+    *temperature_out = sensor->temperature;
+    *humidity_out = sensor->humidity;
+
+    return SHT31_OK;
 }
 

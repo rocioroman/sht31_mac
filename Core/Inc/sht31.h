@@ -26,12 +26,16 @@
  * @brief Enumeration for SHT31 status codes.
  */
 typedef enum {
-    SHT31_OK,                ///< Operation was successful
-    SHT31_ERROR,             ///< General error
-    SHT31_TRANSMIT_ERROR,    ///< I2C transmission error
-    SHT31_RECEIVE_ERROR,     ///< I2C reception error
-    SHT31_CRC_ERROR,         ///< CRC check failed
-    SHT31_ID_MISMATCH,       ///< Sensor ID does not match expected value
+    SHT31_OK,                		///< Operation was successful
+    SHT31_ERROR,             		///< General error
+    SHT31_TRANSMIT_ERROR,    		///< I2C transmission error
+    SHT31_RECEIVE_ERROR,     		///< I2C reception HAL_Error error
+	SHT31_RECEIVE_BUSY_ERROR,		///< I2C reception HAL_Busy error
+	SHT31_RECEIVE_TIMEOUT_ERROR,	///< I2C reception HAL_Timeout error
+	SHT31_RECEIVE_UNKNOWN_ERROR,	///< I2Creception uknown error
+    SHT31_CRC_ERROR,         		///< CRC check failed
+	SHT31_SEND_COMMAND_ID_ERROR,
+    SHT31_RECEIVE_ID_ERROR,
 } SHT31_Status;
 
 /**
