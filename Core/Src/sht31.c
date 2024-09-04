@@ -112,7 +112,7 @@ SHT31_Status SHT31_StartRead(sht31* sensor) {
 SHT31_Status SHT31_ReadTempHum_NonBlocking(sht31* sensor, float* temperature_out, float* humidity_out) {
     uint8_t data[6];
 
-    HAL_StatusTypeDef HAL_status= HAL_I2C_Master_Receive(sensor->hi2c, (sensor->address << 1), data, 6, 0);
+    HAL_StatusTypeDef HAL_status= HAL_I2C_Master_Receive(sensor->hi2c, (sensor->address << 1), data, 6, 2); //para que sea non blocking implementar con interrupción
 
     switch(HAL_status){
     	case HAL_OK:

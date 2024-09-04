@@ -106,14 +106,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-  // Inicializar instancia del sensor
-  // (...) Inicializaciones sistema
-
-  // Crear instancia sensor
-  // Inicializar instancia del sensor
-  // Create an instance of the SHT31_INFO structure for the sensor
-  // Inicializar instancia del sensor
   sht31 sensor;
 
   // Inicializar sensor con address SHT31_ADDRESS_A, una medicion nostretch_medium
